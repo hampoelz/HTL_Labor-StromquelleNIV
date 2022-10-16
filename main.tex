@@ -4,11 +4,11 @@
 \usepackage{styles/main}
 \usepackage{styles/custom}
 
-\labtitle{}
+\labtitle{Stromquelle mit NIV}
 
-\author{}
-\company{HTBLA Weiz}
-\date{}
+\author{Rene Hampölz, Gruppe 6}
+\company{HTBLA Weiz, 5BHET}
+\date{10. Oktober 2022}
 
 \begin{document}
 \input{styles/htbla-labor.tex}
@@ -18,66 +18,184 @@
 
 \section{Einführung}
 
+Es soll eine Stromquelle mit einem nicht invertierendem Operationsverstärker (OPV) dimensiniert und aufgebaut werden.
+Mit einer Simulation soll die Funktionsweise der Schaltung überprüft werden.
+
 \begin{sagesilent}
-    R = 95.5
+    I_a = 0.005
+    U_Bat_OPV = 15
 \end{sagesilent}
 
-Angaben: $R = \sage{norm(R)}\Omega$
+Angaben: \textbf{$I_a = \sage{norm(I_a*1000)}mA$}, $U_{Bat_{OPV}} = \pm \sage{U_Bat_OPV}V$, $U_g = U_{e0} = R_g \cdot I_a$, $OPV = OP27$
 
-\section{Schaltung}
+\section{Stromquelle mit nicht invertierendem OPV}
+
+\subsection{Schaltung}
 
 \begin{figure}[H]
     \centering
     \begin{circuitikz}
         \draw
-          (0,0)     coordinate (in+)
-        ++(4,0)     coordinate (out+)
-          (0,-3)    coordinate (in-)
-        ++(4,0)     coordinate (out-)
+          (0,0)    coordinate (in+)
+        ++(4,-0.5) coordinate (out+)
+          (0,-5)   coordinate (in-)
+        ++(4,2)    coordinate (out-)
 
-        (in+) to[R=$R$,i=$I$,o-o] (out+)
-        (in-) to[short,o-o] (out-)
-        
-        (in+)   to[open, v=$U_e$] (in-)
-        (out+)  to[open, v^=$U_a$] (out-)
+        (2, -0.5)   node[op amp,yscale=-1]  (opv) {}
+        (in+)       to[short,o-]            (opv.+)
+        (opv.out)   to[short,-o]            (out+)
+        (opv.-)     to[short]               (opv.- |- out-)
+                    to[short,-o]            (out-)
+                    to[R=$R_g$,-*]          (out- |- in-) coordinate (aux1)
+        (out+)      to[short]               ++(1,0) coordinate (aux2)
+                    to[R=$R_L$,i=$I_a$]     (aux2 |- out-)
+                    to[short]               (out-)
+
+        (in-) to[short, o-] ++(2,0) node[ground] {} -- (aux1) -- ++(1,0) coordinate (aux3)
+
+        (in+)   to[open, v=$U_{e0}$] (in-)
+        (out+)  to[open, v=$U_a$] (out-)
+        ($(aux2) + (1,0)$)  to[open, v^=$U_{a0}$] ($(aux3) + (1,0)$)
         ;
     \end{circuitikz}
 \end{figure}
 
+\subsection{Funktionsweise}
+Die Eingangsgröße dieser Quelle ist eine konstante Spannung $U_{e0}$, die Ausgangsgröße ein eingeprägter Strom $I_a$.
+Dieser fließt über den Lastwiderstand $R_L$ und den Gegenkopplungswiderstand $R_g$.
+Die an $R_g$ abfallende Spannung ist somit $U_g = U_{e0} = R_g \cdot I_a$.
+Damit ist mit $R_g$ und $U_{e0}$ der konstante Strom $I_a$ einstellbar.
+
+% \section{Massebezogene Stromquelle}
+
+% \subsection{Schaltung}
+
+% \begin{figure}[H]
+%     \centering
+%     \begin{circuitikz}
+%         \draw
+%         (0,-3)    coordinate (in+)
+%         ++(0,-2)  coordinate (in-)
+
+%         (0,0)       node[ground] {}
+%                     to[R=$R_3$]             ++(3,0) coordinate (aux1)
+%         ++(1, -1.5) node[op amp]            (opv) {}
+%         (opv.-)     to[short]               (opv.- |- aux1)
+%         (aux1)      to[R=$R_4$]             (aux1 -| opv.out) -- (opv.out)
+%         (opv.+)     to[short]               (opv.+ |- in+) coordinate (aux2)
+%         (in+)       to[R=$R_1$,o-]          (aux2)
+%                     to[short]               (aux2 -| opv.out) coordinate (aux3)
+%                     to[R=$R_2$]             (opv.out)
+%         (aux3)      to[short,-o]            ++(0.5,0) coordinate (out+)
+%                     to[R=$R_L$,i>^=$I_a$]   ++(0,-2) coordinate (out-)
+%         (in-)       to[short,o-]            ++(1,0)
+%                     node[ground] {}         
+%                     to[short,-o]            (out-)
+
+%         (in+)   to[open, v=$U_{e0}$] (in-)
+%         ($(out+) + (1,0)$)  to[open, v^=$U_a$] ($(out-) + (1,0)$)
+            
+%         ;
+%     \end{circuitikz}
+% \end{figure}
+
+% \subsection{Funktionsweise}
+
 \section{Berechnungen}
 
+Da am Gegenkopplungswiderstand $R_g$ die Eingangsspannung $U_{e0}$ abfällt \textit{($U_g = U_{e0}$)}, ergibt sich für die Ausgangsspannung $U_a$ folgende Formel:
+
 \begin{equation*}
-    \frac{U}{R \cdot I}
+    U_a = U_{a0} - U_{e0}
 \end{equation*}
 
+Die maximale Ausgangsspannung der Schaltung $U_{a0_{max}}$ wird von der Versorgungsspannung des Operationsverstärkers $U_{Bat_{OPV}}$ begrenzt:
+
 \begin{sagesilent}
-    I = 0.005
-    U = R * I
+    U_a0_max = U_Bat_OPV
+\end{sagesilent}
+
+\begin{equation*}
+    U_{a0_{max}} = U_{Bat_{OPV}} = \sage{U_a0_max}V
+\end{equation*}
+
+Um einen möglichst großen maximalen Lastwiederstand $R_{L_{max}}$ bei konstantem Strom $I_a$ zu erzielen, muss die maximale Ausgangsspannung $U_{a_{max}}$ daher möglichst groß gehalten werden.
+Somit wird die Eingangsspannung $U_{e0}$ möglichst klein gewählt:
+
+\begin{sagesilent}
+    U_e0 = 1
+    U_a_max = U_a0_max - U_e0
+\end{sagesilent}
+
+\begin{equation*}
+    U_{e0} = \sage{U_e0}
+\end{equation*}
+\vspace*{-5mm}
+\begin{align*}
+    U_{a_{max}} &= U_{a0_{max}} - U_{e0} \\
+    U_{a_{max}} &= \sage{U_a0_max} - \sage{U_e0} = \sage{U_a_max}V
+\end{align*}
+
+Mit diesen Werten kann der maximale Lastwiederstand $R_{L_{max}}$ berechnet werden:
+
+\begin{sagesilent}
+    R_L_max = U_a_max/I_a
 \end{sagesilent}
 
 \begin{align*}
-    U &= R \cdot I \\
-    U &= \sage{norm(R)} \cdot \sage{norm(I)} \\
-    U &= \sage{norm(U)}V
+    R_{L_{max}} &= \frac{U_{a_{max}}}{I_a} \\
+    R_{L_{max}} &= \frac{\sage{U_a_max}}{\sage{norm(I_a)}} \\
+    R_{L_{max}} &= \sage{norm(R_L_max)}\Omega
 \end{align*}
 
+Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
+
+\begin{sagesilent}
+    R_g = U_e0/I_a
+\end{sagesilent}
+
+\begin{align*}
+    U_g = U_{e0} &= R_g \cdot I_a \\
+    R_g &= \frac{U_{e0}}{I_a} \\
+    R_g &= \frac{\sage{U_e0}}{\sage{norm(I_a)}} \\
+    R_g &= \sage{norm(R_g)}\Omega
+\end{align*}
+
+\bigskip
+
 \section{Simulation}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/01 Stromquelle mit NIV.svg}
+    \caption{Ausgangskennlinie $I_a = f(R_L)$ der Simulation}
+\end{figure}
 
 \section{Auswertung}
 
 \begin{sagesilent}
     measures = Measures(
         [
-            '$R$ in $\Omega$',
-            '$I$ in $A$', 
+            '$R_L$ in $\Omega$',
+            '$I_a$ in $mA$', 
             '$U_a$ in $V$'
         ], [
-            [norm(R), '0.005', '0.4775'],
-            [norm(R), '0.010', '0.4775']
+            ['0', '5', '0.005'],
+            ['300', '5', '1.4'],
+            ['600', '5', '2.8'],
+            ['900', '5', '4.3'],
+            ['1200', '5', '5.7'],
+            ['1500', '5', '7.2'],
+            ['1800', '5', '8.9'],
+            ['2100', '5', '10.8'],
+            ['2400', '5', '11.8'],
+            ['2700', '4', '12.7'],
+            ['3000', '4', '13.1'],
+            ['3300', '3', '13.2']
     ])
 
-    List_R = measures.columns[0]
-    List_I = measures.columns[1]
+    List_RL = measures.columns[0]
+    List_Ia = measures.columns[1]
     List_Ua = measures.columns[2]
 \end{sagesilent}
 
@@ -91,20 +209,34 @@ Angaben: $R = \sage{norm(R)}\Omega$
 \subsection{Grafische Darstellung}
 
 \begin{sagesilent}
-    f = list_plot(
-        list(zip(List_I, List_Ua)),
-        color='blue',
+    f_RL = list_plot(
+        list(zip(List_RL, List_Ia)),
+        color='red',
         plotjoined=True,
         figsize=[5,2],
-        axes_labels=['$I$ in $A$', '$U_a$ in $V$'],
+        axes_labels=['$R_L$ in $\Omega$', '$I_a$ in $mA$'],
+        axes_labels_size=1
+    )
+
+    f_Ua = list_plot(
+        list(zip(List_Ua, List_Ia)),
+        plotjoined=True,
+        figsize=[5,2],
+        axes_labels=['$U_a$ in $V$', '$I_a$ in $mA$'],
         axes_labels_size=1
     )
 \end{sagesilent}
 
 \begin{figure}[H]
     \centering
-    \sageplot{f}
-    \caption{Ausgangskennlinie mit gemessene Werte}
+    \sageplot{f_RL}
+    \caption{Ausgangskennlinie $I_a = f(R_L)$ mit gemessene Werte}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \sageplot{f_Ua}
+    \caption{Ausgangskennlinie $I_a = f(U_a)$ mit gemessene Werte}
 \end{figure}
 
 \clearpage
@@ -114,9 +246,16 @@ Angaben: $R = \sage{norm(R)}\Omega$
 \medskip
 
 \begin{devicelist}
-    \devicecat{}{2}{
-        \device{}{}
-        \device{}{}
+    \devicecat{Widerstands-Dekade}{2}{
+        \device{ET-MTL1-RD23}{R_g}
+        \device{ET-MTL1-RD29}{R_L}
+    }
+    \devicecat{Spannungsquelle}{1}{
+        \device{ET-MTL1-NG03}{U_{E0}}
+    }
+    \devicecat{Multimeter}{2}{
+        \device{ET-MTL1-DM20}{I_a}
+        \device{ET-MTL1-DM22}{U_a}
     }
 \end{devicelist}
 
