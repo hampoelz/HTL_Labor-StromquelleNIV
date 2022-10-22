@@ -202,9 +202,9 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
             ['3300', '3', '13.2']
     ])
 
-    List_RL = measures.columns[0]
-    List_Ia = measures.columns[1]
-    List_Ua = measures.columns[2]
+    index_RL = 0
+    index_Ia = 1
+    index_Ua = 2
 \end{sagesilent}
 
 \subsection{Messwerte}
@@ -218,20 +218,29 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 
 \begin{sagesilent}
     f_RL = list_plot(
-        list(zip(List_RL, List_Ia)),
+        measures.plot_data(index_RL, index_Ia),
         color='red',
-        plotjoined=True,
         figsize=[5,2],
         axes_labels=['$R_L$ in $\Omega$', '$I_a$ in $mA$'],
         axes_labels_size=1
     )
 
-    f_Ua = list_plot(
-        list(zip(List_Ua, List_Ia)),
+    f_RL += list_plot(
+        measures.g1d_smooth(index_RL, index_Ia, sigma=0.75, connect=True),
         plotjoined=True,
+        color='red'
+    )
+
+    f_Ua = list_plot(
+        measures.plot_data(index_Ua, index_Ia),
         figsize=[5,2],
         axes_labels=['$U_a$ in $V$', '$I_a$ in $mA$'],
         axes_labels_size=1
+    )
+
+    f_Ua += list_plot(
+        measures.g1d_smooth(index_Ua, index_Ia, sigma=0.95, connect=True),
+        plotjoined=True
     )
 \end{sagesilent}
 
