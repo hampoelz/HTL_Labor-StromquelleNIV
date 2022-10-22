@@ -27,7 +27,9 @@ Mit einer Simulation soll die Funktionsweise der Schaltung überprüft werden.
     U_O_OPV = 1.8
 \end{sagesilent}
 
-Angaben: \textbf{$I_a = \sage{norm(I_a*1000)}mA$}, $U_{Bat_{OPV}} = \pm \sage{U_Bat_OPV}V$, $U_{O_{OPV}} \approx \sage{norm(U_O_OPV)}$, $U_g = U_{e0} = R_g \cdot I_a$, $OPV = OP27$
+Angaben: \textbf{$I_a = \sage{norm(I_a*1000)}mA$}, $U_{Bat_{OPV}} = \pm \sage{U_Bat_OPV}V$, $U_g = U_{e0} = R_g \cdot I_a$, $OPV = OP27$
+
+Datenblatt: \textbf{$U_{O_{OPV}} \approx \sage{norm(U_O_OPV)}$}
 
 \section{Stromquelle mit nicht invertierendem OPV}
 
@@ -113,19 +115,18 @@ Da am Gegenkopplungswiderstand $R_g$ die Eingangsspannung $U_{e0}$ abfällt \tex
 Die maximale Ausgangsspannung der Schaltung $U_{a0_{max}}$ wird von der Versorgungsspannung $U_{Bat_{OPV}}$, sowie der Ausgangsspannungsschwangung $U_{O_{OPV}}$ des Operationsverstärkers begrenzt:
 
 \begin{sagesilent}
-    #U_a0_max = U_Bat_OPV
     U_a0_max = U_Bat_OPV - U_O_OPV
 \end{sagesilent}
 
-\begin{equation*}
-    U_{a0_{max}} = U_{Bat_{OPV}} - U_{O_{OPV}} = \sage{norm(U_a0_max)}V
-\end{equation*}
+\begin{align*}
+    U_{a0_{max}} &= U_{Bat_{OPV}} - U_{O_{OPV}} \\
+    U_{a0_{max}} &= \sage{norm(U_Bat_OPV)} - \sage{norm(U_O_OPV)} \\
+    U_{a0_{max}} &= \sage{norm(U_a0_max)}V
+\end{align*}
 
 \smallskip
 
 \textit{(Für minimale Ausgangsspannungsschwangungen können \enquote{rail-to-rail output}-OPVs eingesetzt werden.)}
-
-\pagebreak
 
 Um einen möglichst großen maximalen Lastwiederstand $R_{L_{max}}$ bei konstantem Strom $I_a$ zu erzielen, muss die maximale Ausgangsspannung $U_{a_{max}}$ daher möglichst groß gehalten werden.
 Somit wird die Eingangsspannung $U_{e0}$ möglichst klein gewählt:
@@ -141,7 +142,8 @@ Somit wird die Eingangsspannung $U_{e0}$ möglichst klein gewählt:
 \vspace*{-5mm}
 \begin{align*}
     U_{a_{max}} &= U_{a0_{max}} - U_{e0} \\
-    U_{a_{max}} &= \sage{norm(U_a0_max)} - \sage{norm(U_e0)} = \sage{norm(U_a_max)}V
+    U_{a_{max}} &= \sage{norm(U_a0_max)} - \sage{norm(U_e0)} \\
+    U_{a_{max}} &= \sage{norm(U_a_max)}V
 \end{align*}
 
 Mit diesen Werten kann der maximale Lastwiederstand $R_{L_{max}}$ berechnet werden:
@@ -176,7 +178,7 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 \begin{figure}[H]
     \centering
     \includesvg[width=\textwidth]{images/01 Stromquelle mit NIV.svg}
-    \caption{Ausgangskennlinie $I_a = f(R_L)$ der Simulation}
+    \caption{Ausgangskennlinie \textbf{$I_a = f(R_L)$} der Simulation}
 \end{figure}
 
 \section{Auswertung}
@@ -247,13 +249,13 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 \begin{figure}[H]
     \centering
     \sageplot{f_RL}
-    \caption{Ausgangskennlinie $I_a = f(R_L)$ mit gemessene Werte}
+    \caption{Ausgangskennlinie \textbf{$I_a = f(R_L)$} mit gemessene Werte}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \sageplot{f_Ua}
-    \caption{Ausgangskennlinie $I_a = f(U_a)$ mit gemessene Werte}
+    \caption{Ausgangskennlinie \textbf{$I_a = f(U_a)$} mit gemessene Werte}
 \end{figure}
 
 \clearpage
