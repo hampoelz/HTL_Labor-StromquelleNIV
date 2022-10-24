@@ -221,28 +221,30 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 \begin{sagesilent}
     f_RL = list_plot(
         measures.plot_data(index_RL, index_Ia),
-        color='red',
+        color='purple',
         figsize=[5,2],
         axes_labels=['$R_L$ in $\Omega$', '$I_a$ in $mA$'],
         axes_labels_size=1
     )
 
-    f_RL += list_plot(
+    f_RL += line(
         measures.g1d_smooth(index_RL, index_Ia, sigma=0.75, connect=True),
-        plotjoined=True,
+        linestyle="--",
         color='red'
     )
 
     f_Ua = list_plot(
         measures.plot_data(index_Ua, index_Ia),
+        color='purple',
         figsize=[5,2],
         axes_labels=['$U_a$ in $V$', '$I_a$ in $mA$'],
         axes_labels_size=1
     )
 
-    f_Ua += list_plot(
+    f_Ua += line(
         measures.g1d_smooth(index_Ua, index_Ia, sigma=0.95, connect=True),
-        plotjoined=True
+        linestyle="--",
+        color='blue'
     )
 \end{sagesilent}
 
