@@ -179,9 +179,23 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 
 \section{Simulation}
 
+\begin{sagesilent}
+    simulation_data = LTSpice.plot_data("src/01 Stromquelle mit NIV.txt")
+    simulation_data_Iout = simulation_data["I(Rl)"]
+
+    simulation_plot = list_plot(
+        simulation_data_Iout,
+        axes_labels=['$R_L$ in $\Omega$', '$I_a$ in A'],
+        figsize=[5.5,3],
+        plotjoined=True,
+        frame=True,
+        color="red"
+    )
+\end{sagesilent}
+
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/01 Stromquelle mit NIV.svg}
+    \sageplot{simulation_plot}
     \caption{Ausgangskennlinie \textbf{$I_a = f(R_L)$} der Simulation}
 \end{figure}
 
