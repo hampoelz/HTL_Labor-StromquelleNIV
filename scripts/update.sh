@@ -1,10 +1,14 @@
 #
-# Copyright (c) 2022 Rene Hampölz
+# Copyright (c) 2023 Rene Hampölz
 #
 # Use of this source code is governed by an MIT-style
 # license that can be found in the LICENSE file under
 # https://github.com/hampoelz/LaTeX-Template.
 #
+
+# Benutzung:
+#   https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#vorkonfigurierte-skriptetasks
+#   https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#aktualisieren
 
 #!/bin/bash
 
@@ -27,11 +31,8 @@ tplver_file=".git/tplver"
 currbr_file=".git/currbr"
 
 # commits ignored by cherry-pick (seperate with space)
-ignore_SHAs="ecb34d6"
+ignore_SHAs="ecb34d6 ec879ac 54ff7ab ec75cc7"
 
-
-hookmgr_path="scripts/hookmgr.sh"
-rebuild_script="scripts/hooks/rebuild.sh"
 
 script_path=".git/~update.sh"
 script_url="https://raw.githubusercontent.com/$gh_repo/$remote_branch/scripts/update.sh"
@@ -52,11 +53,11 @@ function show_usage()
 
 function pull_script()
 {
-    function realpath() { echo $(cd $(dirname "$1"); pwd)/$(basename "$1"); }
+    function realpath() { echo $(cd "$(dirname "$1")"; pwd)/$(basename "$1"); }
     
     script_path="$(realpath $1)"
-    if [ "$(realpath $0)" == "$script_path" ]; then return 0; fi
-    if [ -d "$script_path" ]; then
+    if [ "$(realpath "$0")" == "$script_path" ]; then return 0; fi
+    if [ -d "$(dirname "$script_path")" ]; then
         echo Pull latest update script ...
         curl -sL "$script_url" -o "$script_path"
         bash "$script_path" $2
@@ -66,15 +67,17 @@ function pull_script()
 
 function check_internet()
 {
-    timeout 1 ping github.com -c 1 &> /dev/null || {
-        echo
-        echo "========================================================"
-        echo "              Unable to connect to github!              "
-        echo "          Please check your internet connection         "
-        echo "========================================================"
-        echo
-        exit
-    }
+    if [ ! "${CI}" ]; then
+        timeout 1 ping github.com -c 1 &> /dev/null || {
+            echo
+            echo "========================================================"
+            echo "              Unable to connect to github!              "
+            echo "          Please check your internet connection         "
+            echo "========================================================"
+            echo
+            exit
+        }
+    fi
 }
 
 function check_git()
@@ -200,12 +203,6 @@ function start_merge()
     echo "========================================================"
     echo
 
-    # add rebuild hooks
-    if [ -e "$hookmgr_path" ] && [ -e "$rebuild_script" ]; then
-        /bin/bash "$hookmgr_path" add pre-push "bash $rebuild_script --post_push" > /dev/null
-        /bin/bash "$hookmgr_path" add post-commit "bash $rebuild_script --post_commit" > /dev/null
-    fi
-
     cleanup
 }
 
@@ -298,7 +295,7 @@ function start()
 
 check_git
 check_internet
-if [ "$1" != "--check" ]; then pull_script "$script_path" "$1"; fi
+pull_script "$script_path" "$1"
 
 check_git_version
 

@@ -1,4 +1,7 @@
 {
+    "files.associations": {
+        "*.sage": "python"
+    },
     "task.allowAutomaticTasks": "on",
     "git.pullTags": false,
     "git.mergeEditor": true,
@@ -10,6 +13,14 @@
             "tools": [ "lualatexmk" ]
         }
     ],
+    "latex-workshop.linting.lacheck.enabled": true,
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.sagetex.sage",
+        "*.sagetex.sout",
+        "*.sagetex.scmd"
+    ],
+    "latex-workshop.latex.clean.subfolder.enabled": true,
     "gitlens.showWelcomeOnInstall": false,
     "gitlens.showWhatsNewAfterUpgrades": false
 }

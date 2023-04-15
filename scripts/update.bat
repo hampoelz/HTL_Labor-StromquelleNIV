@@ -1,10 +1,14 @@
 ::
-:: Copyright (c) 2022 Rene Hampölz
+:: Copyright (c) 2023 Rene Hampölz
 ::
 :: Use of this source code is governed by an MIT-style
 :: license that can be found in the LICENSE file under
 :: https://github.com/hampoelz/LaTeX-Template.
 ::
+
+:: Benutzung:
+::   https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#vorkonfigurierte-skriptetasks
+::   https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#aktualisieren
 
 @echo off
 
@@ -27,11 +31,8 @@ set "tplver_file=.git\tplver"
 set "currbr_file=.git\currbr"
 
 :: commits ignored by cherry-pick (seperate with space)
-set "ignore_SHAs=ecb34d6"
+set "ignore_SHAs=ecb34d6 ec879ac 54ff7ab ec75cc7"
 
-
-set "hookmgr_path=scripts\hookmgr.bat"
-set "rebuild_script=scripts/hooks/rebuild.sh"
 
 set "refresh_env_path=scripts\refreshenv.bat"
 set "refresh_env_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
@@ -43,7 +44,7 @@ if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
 call:check_git
 call:check_internet
-if not [%1] == [/check] call:pull_script "%script_path%" "%~1"
+call:pull_script "%script_path%" "%~1"
 
 call:refresh_env
 call:check_git_version
@@ -283,12 +284,6 @@ exit
     echo              Update was successfully merged
     echo ========================================================
     echo.
-
-    :: add rebuild hooks
-    if exist "%hookmgr_path%" if exist "%rebuild_script%" (
-        call "%hookmgr_path%" add pre-push "bash %rebuild_script% --post_push" >nul
-        call "%hookmgr_path%" add post-commit "bash %rebuild_script% --post_commit" >nul
-    )
 
     :cleanup
     echo -------- cleanup ---------

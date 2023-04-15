@@ -1,10 +1,12 @@
 ::
-:: Copyright (c) 2022 Rene Hampölz
+:: Copyright (c) 2023 Rene Hampölz
 ::
 :: Use of this source code is governed by an MIT-style
 :: license that can be found in the LICENSE file under
 :: https://github.com/hampoelz/LaTeX-Template.
 ::
+
+:: Benutzung: https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#git-versionsverlauf
 
 @echo off
 
@@ -21,8 +23,8 @@ set "jq_bin_download=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-
 set "jq_bin_path=.\out\bin\jq-win32.exe"
 
 :: List of Gitmojis that will be removed in the commit message seperate with space)
-::   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | .\out\bin\jq-win32.exe -r .gitmojis[].code
-set "gitmojis=:art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist:"
+::   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/packages/gitmojis/src/gitmojis.json | .\out\bin\jq-win32.exe -r .gitmojis[].code
+set "gitmojis=:art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist: :money_with_wings: :thread: :safety_vest:"
 
 set "title="
 set "prefix="
@@ -184,11 +186,11 @@ exit
 
                 if not [!commit_date!] == [] set "commit_date={!commit_date!}"
                 if not [!commit_sha!] == [] set "commit_sha={!commit_sha!}"
-                if not [!commit_msg!] == [] set "commit_msg={\directlua{tex.sprint(-2, "\luaescapestring{!commit_msg!}")}}"
-                if not [!commit_author!] == [] set "commit_author={!commit_author!}"
+                if not [!commit_msg!] == [] set "commit_msg={\directlua{tex.sprint(-2, "\luaescapestring{\unexpanded{!commit_msg!}}")}}"
+                if not [!commit_author!] == [] set "commit_author={\directlua{tex.sprint(-2, "\luaescapestring{\unexpanded{!commit_author!}}")}}"
 
                 if not [!github_sha_url!] == [] set "github_sha_url=[!github_sha_url!]"
-                if not [!github_author_url!] == [] set "github_author_url=[!github_author_url!]"
+                if not [!github_author_url!] == [] set "github_author_url=[\directlua{tex.sprint(-2, "\luaescapestring{\unexpanded{!github_author_url!}}")}]"
 
                 :: output combined data
                 echo.\%prefix_entry%!commit_date!!commit_sha!!github_sha_url!!commit_author!!github_author_url!!github_author_avatar_file!!commit_msg!

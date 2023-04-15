@@ -1,10 +1,12 @@
 ::
-:: Copyright (c) 2022 Rene Hampölz
+:: Copyright (c) 2023 Rene Hampölz
 ::
 :: Use of this source code is governed by an MIT-style
 :: license that can be found in the LICENSE file under
 :: https://github.com/hampoelz/LaTeX-Template.
 ::
+
+:: Benutzung: https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#vorkonfigurierte-skriptetasks
 
 @echo off
 git clean -Xdf

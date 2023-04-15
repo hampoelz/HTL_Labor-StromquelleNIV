@@ -1,10 +1,12 @@
 #
-# Copyright (c) 2022 Rene Hampölz
+# Copyright (c) 2023 Rene Hampölz
 #
 # Use of this source code is governed by an MIT-style
 # license that can be found in the LICENSE file under
 # https://github.com/hampoelz/LaTeX-Template.
 #
+
+# Benutzung: https://github.com/hampoelz/HTL_LaTeX-Template/wiki/02-Benutzung#git-versionsverlauf
 
 #!/bin/bash
 
@@ -21,8 +23,8 @@ jq_bin_download="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linu
 jq_bin_path="./out/bin/jq-linux32"
 
 # List of Gitmojis that will be removed in the commit message (seperate with space)
-#   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | jq -r .gitmojis[].code
-gitmojis=":art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist:"
+#   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/packages/gitmojis/src/gitmojis.json | jq -r '.gitmojis[].code' | tr '\n' ' '
+gitmojis=":art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist: :money_with_wings: :thread: :safety_vest:"
 
 title=""
 prefix=""
@@ -41,7 +43,7 @@ function show_usage()
 }
 
 function jq_binary() {
-    arch=$(uname -i)
+    arch=$(uname -m)
 
     if [[ $arch == x86_64* ]] || [[ $arch == i*86 ]]; then
         
@@ -76,6 +78,10 @@ function start()
     github_api="$(git config --get remote.origin.url | grep -F https://github.com/)"
     github_api="${github_api/'.git'/''}"
     github_api="${github_api/'//github.com/'/'//api.github.com/repos/'}"
+
+    if [[ ! -z "$GITHUB_TOKEN" ]]; then
+        github_api_token="-H 'authorization: Bearer $GITHUB_TOKEN'"
+    fi
 
     # loop through commits and get date and sha
     commit_counter=0
@@ -114,8 +120,7 @@ function start()
                     if jq --version &> /dev/null || jq_binary; then
                         if [ "${CI}" ] || timeout 1 ping github.com -c 1 &> /dev/null; then
                             # fetch & parse data from GitHub and separate to write variables
-                            github_data=`curl -s $github_api/commits/$commit_sha | $(jq_binary && echo $jq_bin_path || echo jq) -r .html_url,.author.login,.author.html_url,.author.avatar_url`
-
+                            github_data=`eval curl -s $github_api_token $github_api/commits/$commit_sha | $(jq_binary && echo $jq_bin_path || echo jq) -r .html_url,.author.login,.author.html_url,.author.avatar_url`
                             github_sha_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 1)"
                             github_author="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 2)"
                             github_author_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 3)"
@@ -150,11 +155,11 @@ function start()
 
                 if [ "$commit_date" != "" ]; then commit_date="{$commit_date}"; fi
                 if [ "$commit_sha" != "" ]; then commit_sha="{$commit_sha}"; fi
-                if [ "$commit_msg" != "" ]; then commit_msg="{\directlua{tex.sprint(-2, \"\luaescapestring{$commit_msg}\")}}"; fi
-                if [ "$commit_author" != "" ]; then commit_author="{$commit_author}"; fi
+                if [ "$commit_msg" != "" ]; then commit_msg="{\directlua{tex.sprint(-2, \"\luaescapestring{\unexpanded{$commit_msg}}\")}}"; fi
+                if [ "$commit_author" != "" ]; then commit_author="{\directlua{tex.sprint(-2, \"\luaescapestring{\unexpanded{$commit_author}}\")}}"; fi
 
                 if [ "$github_sha_url" != "" ]; then github_sha_url="[$github_sha_url]"; fi
-                if [ "$github_author_url" != "" ]; then github_author_url="[$github_author_url]"; fi
+                if [ "$github_author_url" != "" ]; then github_author_url="[\directlua{tex.sprint(-2, \"\luaescapestring{\unexpanded{$github_author_url}}\")}]"; fi
 
                 # output combined data
                 echo "\\$prefix_entry$commit_date$commit_sha$github_sha_url$commit_author$github_author_url$github_author_avatar_file$commit_msg"
