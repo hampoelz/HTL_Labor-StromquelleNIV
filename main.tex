@@ -26,9 +26,9 @@ Mit einer Simulation soll die Funktionsweise der Schaltung überprüft werden.
     U_O_OPV = 1.8
 \end{sagesilent}
 
-Angaben: $I_a = \var{I_a*1000}mA$, $U_{Bat_{OPV}} = \pm \sage{U_Bat_OPV}V$, $U_g = U_{e0} = R_g \cdot I_a$, OPV: OP27
+Angaben: $I_a = \SIvar{I_a*1000}{\milli\ampere}$, $U_{Bat_{OPV}} = \pm \SIvar{U_Bat_OPV}{\volt}$, $U_g = U_{e0} = R_g \cdot I_a$, OPV: OP27
 
-Datenblatt: $U_{O_{OPV}} \approx \var{U_O_OPV}$
+Datenblatt: $U_{O_{OPV}} \approx \SIvar{U_O_OPV}{\volt}$
 
 \section{Stromquelle mit nicht invertierendem OPV}
 
@@ -125,7 +125,7 @@ Die maximale Ausgangsspannung der Schaltung $U_{a0_{max}}$ wird von der Versorgu
 \begin{align*}
     U_{a0_{max}} &= U_{Bat_{OPV}} - U_{O_{OPV}} \\
     U_{a0_{max}} &= \var{U_Bat_OPV} - \var{U_O_OPV} \\
-    U_{a0_{max}} &= \var{U_a0_max}V
+    U_{a0_{max}} &= \SIvar{U_a0_max}{\volt}
 \end{align*}
 
 \smallskip
@@ -141,13 +141,13 @@ Somit wird die Eingangsspannung $U_{e0}$ möglichst klein gewählt:
 \end{sagesilent}
 
 \begin{equation*}
-    U_{e0} = \var{U_e0}
+    U_{e0} = \SIvar{U_e0}{\volt}
 \end{equation*}
 \vspace*{-5mm}
 \begin{align*}
     U_{a_{max}} &= U_{a0_{max}} - U_{e0} \\
     U_{a_{max}} &= \var{U_a0_max} - \var{U_e0} \\
-    U_{a_{max}} &= \var{U_a_max}V
+    U_{a_{max}} &= \SIvar{U_a_max}{\volt}
 \end{align*}
 
 Mit diesen Werten kann der maximale Lastwiederstand $R_{L_{max}}$ berechnet werden:
@@ -159,7 +159,7 @@ Mit diesen Werten kann der maximale Lastwiederstand $R_{L_{max}}$ berechnet werd
 \begin{align*}
     R_{L_{max}} &= \frac{U_{a_{max}}}{I_a} \\
     R_{L_{max}} &= \frac{\var{U_a_max}}{\var{I_a}} \\
-    R_{L_{max}} &= \var{R_L_max}\Omega
+    R_{L_{max}} &= \SIvar{R_L_max}{\ohm}
 \end{align*}
 
 Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
@@ -172,7 +172,7 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
     U_g = U_{e0} &= R_g \cdot I_a \\
     R_g &= \frac{U_{e0}}{I_a} \\
     R_g &= \frac{\var{U_e0}}{\var{I_a}} \\
-    R_g &= \var{R_g}\Omega
+    R_g &= \SIvar{R_g}{\ohm}
 \end{align*}
 
 \bigskip
@@ -191,8 +191,8 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
     measures = Measures(
         [
             '$R_L$ in $\Omega$',
-            '$I_a$ in $mA$', 
-            '$U_a$ in $V$'
+            '$I_a$ in mA', 
+            '$U_a$ in V'
         ], [
             ['0', '5', '0.005'],
             ['300', '5', '1.4'],
@@ -217,7 +217,7 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
 
 \begin{center}
     \renewcommand{\arraystretch}{1.2}
-    \sage{measures.table}
+    \var{measures.table}
 \end{center}
 
 \subsection{Grafische Darstellung}
@@ -227,7 +227,7 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
         measures.plot_data(index_RL, index_Ia),
         color='purple',
         figsize=[5,2],
-        axes_labels=['$R_L$ in $\Omega$', '$I_a$ in $mA$'],
+        axes_labels=['$R_L$ in $\Omega$', '$I_a$ in mA'],
         axes_labels_size=1
     )
 
@@ -241,7 +241,7 @@ Des Weiteren lässt sich der Gegenkopplungswiderstand $R_g$ berechnen:
         measures.plot_data(index_Ua, index_Ia),
         color='purple',
         figsize=[5,2],
-        axes_labels=['$U_a$ in $V$', '$I_a$ in $mA$'],
+        axes_labels=['$U_a$ in V', '$I_a$ in mA'],
         axes_labels_size=1
     )
 
