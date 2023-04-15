@@ -50,15 +50,20 @@ Datenblatt: $U_{O_{OPV}} \approx \var{U_O_OPV}$
                     to[short,-o]            (out-)
                     to[R=$R_g$,-*]          (out- |- in-) coordinate (aux1)
         (out+)      to[short]               ++(1,0) coordinate (aux2)
-                    to[R=$R_L$,i=$I_a$]     (aux2 |- out-)
+                    to[R=$R_L$,name=outI,i]     (aux2 |- out-)
                     to[short]               (out-)
 
         (in-) to[short, o-] ++(2,0) node[ground] {} -- (aux1) -- ++(1,0) coordinate (aux3)
 
-        (in+)   to[open, v=$U_{e0}$] (in-)
-        (out+)  to[open, v=$U_a$] (out-)
-        ($(aux2) + (1,0)$)  to[open, v^=$U_{a0}$] ($(aux3) + (1,0)$)
+        (in+)   to[open,name=_inV,v] (in-)
+        (out+)  to[open,name=outV,v] (out-)
+        ($(aux2) + (1,0)$)  to[open,name=_outV,v^] ($(aux3) + (1,0)$)
         ;
+
+        \voltage{_inV}{$U_{e0}$}
+        \voltage{_outV}{$U_{a0}$}
+        \voltage{outV}{$U_a$}
+        \current{outI}{$I_a$}
     \end{circuitikz}
 \end{figure}
 
